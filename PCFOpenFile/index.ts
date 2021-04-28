@@ -1,7 +1,17 @@
 import {IInputs, IOutputs} from "./generated/ManifestTypes";
 
 export class PCFOpenFile implements ComponentFramework.StandardControl<IInputs, IOutputs> {
-
+	
+	// Value of the field is stored and used inside the control 
+	private _value: string;
+	// label element created as part of this control
+	private label: HTMLInputElement;
+	// button element created as part of this control
+	private button: HTMLButtonElement;
+	// This element contains all elements of our custom control example
+	private _container: HTMLDivElement;
+	//set the context
+	private _context: ComponentFramework.Context<IInputs>;
 	/**
 	 * Empty constructor.
 	 */
@@ -21,6 +31,30 @@ export class PCFOpenFile implements ComponentFramework.StandardControl<IInputs, 
 	public init(context: ComponentFramework.Context<IInputs>, notifyOutputChanged: () => void, state: ComponentFramework.Dictionary, container:HTMLDivElement)
 	{
 		// Add control initialization code
+
+		// Creating the label for the control and setting the relevant values.
+		this.label = document.createElement("input");
+		this.label.setAttribute("type", "label");
+		this._context = context;
+		this._value = this.label.value
+
+		//Create a button to open the file.
+		this.button = document.createElement("button");
+
+		// Get the localized string from localized string 
+		this.button.innerHTML = context.resources.getString("URLControl_ButtonLabel");
+		this.button.classList.add("Simple_Button_Style");
+		this.button.addEventListener("click", this.onButtonClick.bind(this));
+		
+		// Adding the label and button created to the container DIV.
+		this._container = document.createElement("div");
+		this._container.appendChild(this.label);
+		this._container.appendChild(this.button);
+		container.appendChild(this._container);
+	}
+	
+	private onButtonClick(event: Event): void {
+		this._context.navigation.openUrl(this.label.value);
 	}
 
 
@@ -31,6 +65,7 @@ export class PCFOpenFile implements ComponentFramework.StandardControl<IInputs, 
 	public updateView(context: ComponentFramework.Context<IInputs>): void
 	{
 		// Add code to update control view
+		this._context = context;
 	}
 
 	/** 
